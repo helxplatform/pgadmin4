@@ -1,6 +1,11 @@
 #!/bin/sh
 
-mkdir /home/${USER_NAME}/${USER_NAME}-pgadmin
+if [ ! -d /home/${USER_NAME}/${USER_NAME}-pgadmin ]
+then
+  mkdir /home/${USER_NAME}/${USER_NAME}-pgadmin
+else
+  cp -r /home/${USER_NAME}/${USER_NAME}-pgadmin/pgadmin/* /var/lib/pgadmin
+fi
 
 # Create home and user path variables
 #HOME_PATH="/home/${USER_NAME}/${USER_NAME}-pgadmin"
