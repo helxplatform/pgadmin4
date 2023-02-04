@@ -15,7 +15,7 @@ fi
 apk add rsync
 
 # Add a cronjob to the crontab
-(crontab -l ; echo "* * * * * rsync -av /var/lib/pgadmin /home/${USER_NAME}/${USER_NAME}-pgadmin >> mylog.log") | crontab -
+(crontab -l ; echo "* * * * * rsync -av /var/lib/pgadmin /home/${USER_NAME}/${USER_NAME}-pgadmin") | crontab -
 
 # Start the cron daemon
 crond
