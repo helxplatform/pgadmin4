@@ -6,6 +6,8 @@ COPY start-pgadmin.sh /start-pgadmin.sh
 # RUN chmod +x ./start-pgadmin.sh
 # RUN chmod -R 777 ./start-pgadmin.sh
 
+COPY /root /
+
 USER pgadmin
 
 ENTRYPOINT /start-pgadmin.sh
