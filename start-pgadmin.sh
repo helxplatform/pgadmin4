@@ -1,29 +1,13 @@
 #!/bin/sh
 
-mkdir /home/${USER_NAME}/${USER_NAME}-pgadmin
+export SCRIPT_NAME="$NB_PREFIX"
+export PGADMIN_CONFIG_DATA_DIR="/home/${USER_NAME}/.helx/pgadmin"
 
-# Create home and user path variables
-#HOME_PATH="/home/${USER_NAME}/${USER_NAME}-pgadmin"
-#USER_PATH="/var/lib/pgadmin"
+# Do any HeLx-specific configurations.
+/helx-init.sh
 
-# Install rsync
-apk add rsync
+# pgAdmin wants quotes around a string variable name.
+export PGADMIN_CONFIG_DATA_DIR="\"$PGADMIN_CONFIG_DATA_DIR\""
 
-# Add a cronjob to the crontab
-(crontab -l ; echo "* * * * * rsync -av /var/lib/pgadmin /home/${USER_NAME}/${USER_NAME}-pgadmin >> mylog.log") | crontab -
-
-# Start the cron daemon
-crond
-
-## Create a soft link
-#function make_soft_link() {
-#    echo "Creating symlink"
-#    ln -s ${USER_PATH} ${HOME_PATH}
-#}
-
-#if [ -d "$USER_PATH" ]; then
-#    make_soft_link
-#fi
-
-# Start pgadmin4 process
-SCRIPT_NAME="$NB_PREFIX" /entrypoint.sh
+# Start regular entrypoint of pgadmin.
+/entrypoint.sh
