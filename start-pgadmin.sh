@@ -1,7 +1,11 @@
 #!/bin/sh
 
+set -eoux pipefail
+
 export SCRIPT_NAME="$NB_PREFIX"
 export PGADMIN_CONFIG_DATA_DIR="/home/${USER_NAME}/.helx/pgadmin"
+
+mkdir -p $PGADMIN_CONFIG_DATA_DIR
 
 # Do any HeLx-specific configurations.
 /helx-init.sh
