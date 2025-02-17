@@ -2,8 +2,9 @@
 
 set -eoux pipefail
 
+declare -i CURRENT_UID=`id -u`
 export USER=${USER-"helx"}
-export USER_UID=${USER_UID-"1000"}
+export USER_UID=${CURRENT_UID-"1000"}
 export USER_GID=${USER_GID-"0"}
 export DEFAULT_USER="pgadmin"
 # Use NB_PREFIX for base path of ttyd if it is set and BASE_PATH is not set.
@@ -13,7 +14,6 @@ export NB_PREFIX=${NB_PREFIX-"/"}
 # SCRIPT_NAME is used to define the URL prefix if not "/".
 export SCRIPT_NAME=${SCRIPT_NAME-$NB_PREFIX}
 
-declare -i CURRENT_UID=`id -u`
 if [ $CURRENT_UID -ne 0 ]
 then
   export HOME="/home/$USER"

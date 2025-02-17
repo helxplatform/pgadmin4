@@ -34,42 +34,23 @@ help: ## This help.
 .DEFAULT_GOAL := help
 
 build: ## Build the image.
-	    docker build --pull \
+	docker build --pull \
+		--platform=linux/amd64 \
 		--build-arg BASE_IMAGE=${BASE_IMAGE} \
 		--build-arg BASE_IMAGE_TAG=${BASE_IMAGE_TAG} \
 		-t ${APP_NAME} .
 
 build-nc: ## Build the image without caching.
-	    docker build --pull --no-cache \
+	docker build --pull --no-cache \
+		--platform=linux/amd64 \
 		--build-arg BASE_IMAGE=${BASE_IMAGE} \
 		--build-arg BASE_IMAGE_TAG=${BASE_IMAGE_TAG} \
 		-t ${APP_NAME} .
-
-build-kaniko: ## Build the image with Kaniko.
-		./create-image-registry-auth-file.sh
-		docker run \
-			-v $(PWD)/.image-registry-auth-config.json:/kaniko/.docker/config.json:ro \
-    		-v $(PWD):/workspace \
-    		gcr.io/kaniko-project/executor:latest \
-    		--dockerfile Dockerfile \
-			--build-arg BASE_IMAGE=${BASE_IMAGE} \
-			--build-arg BASE_IMAGE_TAG=${BASE_IMAGE_TAG} \
-    		--destination "$(IMAGE_REPO)/$(APP_NAME):$(TAG)" \
-    		--context dir:///workspace/
-		dd if=/dev/urandom of=.image-registry-auth-config.json bs=10 count=20
-		rm .image-registry-auth-config.json
-		echo "WARNING: The file/dir permission changes don't seem to be kept in the kaniko-built image."
 
 run: ## Run container on port configured in `config.env`
 	docker run -i -t --rm --env-file=./run.env -u $(UID):$(GID) \
 	  $(HOST_MOUNT) $(GPUS_ARG) -p=$(HOST_PORT):$(CONTAINER_PORT) \
 	  --name="$(APP_NAME)" $(ENTRYPOINT_ARG) $(APP_NAME) $(DOCKER_RUN_CMD_ARGS)
-
-run-kaniko: ## Run container on port configured in `config.env` using remote image built by Kaniko.
-	docker run -i -t --rm --env-file=./run.env -u $(UID):$(GID) \
-	  -v $(PWD)/host:/host -p=$(HOST_PORT):$(CONTAINER_PORT) \
-	  --name="$(APP_NAME)" $(ENTRYPOINT_ARG) $(IMAGE_REPO)/$(APP_NAME):$(TAG) \
-	  $(DOCKER_RUN_CMD_ARGS)
 
 up: build run ## Run container on port configured in `config.env` (Alias to run)
 
@@ -79,7 +60,7 @@ stop: ## Stop and remove a running container
 release: build-nc publish ## Make a release by building and publishing tagged containers to ECR
 
 # Docker publish
-publish: publish-latest publish-version publish-short-hash ## Publish tags
+publish: publish-latest publish-version ## Publish tags
 	@echo 'publish tags to $(IMAGE_REPO)'
 
 publish-latest: tag-latest ## Publish the `latest` tagged container to ECR
@@ -95,7 +76,7 @@ publish-short-hash: tag-short-hash ## Publish the short-hash tagged container to
 	docker push $(IMAGE_REPO)/$(APP_NAME):$(COMMIT_HASH)
 
 # Docker tagging
-tag: tag-latest tag-version tag-short-hash ## Generate container tags
+tag: tag-latest tag-version ## Generate container tags
 
 tag-latest: ## Generate container `latest` tag
 	@echo 'create tag latest'
