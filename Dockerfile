@@ -38,7 +38,7 @@ RUN /venv/bin/python -m pip install \
     # Upgrades from 3.1.5. Addresses CVE-2025-27516 (ACE)
     Jinja2==3.1.6 \
     # Upgrades from 2.4.0. Addresses CVE-2025-50181 and CVE-2025-50182 (open redirects)
-    urllib==2.5.0 \
+    urllib3==2.5.0 \
     # Upgrades from 22.0.0. Addresses CVE-2024-6827 (request smuggling)
     # While I'm hesitant to mess with such a core dependency of pgadmin, the breaking changes from
     # v22 -> v23 are scoped to addressing malicious behavior, and this CVE is applicable to our use-case.
